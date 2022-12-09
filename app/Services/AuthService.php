@@ -28,7 +28,6 @@ final class AuthService extends BaseService
      */
     public function register($request, bool $withCredentials = true): array
     {
-        DB::beginTransaction();
         try {
             $user = $this->user->newInstance();
             $user->name = $request->name;
@@ -39,10 +38,8 @@ final class AuthService extends BaseService
             $user->save();
             $credentials = $this->checkCredentials($user->email, $request->password);
             $data = ['user' => $user, 'credentials' => $credentials];
-            DB::commit();
-            return $this->serviceReturn(true, __('success.register_success'), 200, $user);
+            return $this->serviceReturn(true, __('success.register_success'), 200, $data);
         } catch (Exception $e) {
-            DB::rollback();
             return $this->serviceReturn(false, $e->getMessage(), 500, $e);
         }
     }
@@ -56,8 +53,8 @@ final class AuthService extends BaseService
         try {
             $response = $this->checkCredentials($request->credentials, $request->password);
             if (!empty($response['access_token'])) {
-                $user = User::query()->where('email', User::generateEmail($request->credentials))->firstOrFail();
-                $user->load(['roles.permissions', 'permissions']);
+                $user = User::query()->where('email', $request->credentials)->firstOrFail();
+//                $user->load(['roles.permissions', 'permissions']);
                 $data = [
                     'credentials' => $response,
                     'user' => $user
@@ -104,7 +101,7 @@ final class AuthService extends BaseService
      */
     public function checkCredentials($credentials, $password): mixed
     {
-        return  Http::asForm()->acceptJson()->post(config('services.passport.base_url'), [
+        return Http::asForm()->acceptJson()->post(config('services.passport.base_url'), [
             'grant_type' => 'password',
             'client_id' => config('services.passport.client_id'),
             'client_secret' => config('services.passport.client_secret'),
