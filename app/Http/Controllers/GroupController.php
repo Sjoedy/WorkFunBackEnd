@@ -86,4 +86,13 @@ class GroupController extends Controller
     {
         return $this->controllerResponse($this->groupService->groupInfo($request, $groupId));
     }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function userHasGroup(Request $request): JsonResponse
+    {
+        return $this->controllerResponse($this->groupService->userHasGroup($request));
+    }
 }

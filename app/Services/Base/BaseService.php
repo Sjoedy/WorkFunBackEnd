@@ -93,6 +93,14 @@ class BaseService
         }
         return $data;
     }
+
+    /**
+     * @param bool $success
+     * @param $message
+     * @param $code
+     * @param $data
+     * @return array
+     */
     public function serviceResponse(bool $success, $message, $code, $data): array
     {
         return [
@@ -103,6 +111,11 @@ class BaseService
         ];
     }
 
+    /**
+     * @param $date
+     * @param $format
+     * @return bool
+     */
     public function checkDateFormat($date, $format): bool
     {
         $d = DateTime::createFromFormat($format, $date);

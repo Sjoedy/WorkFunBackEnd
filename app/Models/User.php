@@ -52,4 +52,12 @@ class User extends Authenticatable
             ->withPivot('type')
             ->withTimestamps();
     }
+
+    /**
+     * The challenges that belong to the user.
+     */
+    public function challenges(): BelongsToMany
+    {
+        return $this->belongsToMany(Challenge::class, 'challenge_users')->withTimestamps();
+    }
 }

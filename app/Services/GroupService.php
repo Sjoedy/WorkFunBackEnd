@@ -22,6 +22,10 @@ final class GroupService extends BaseService
         $this->group = $group;
     }
 
+    /**
+     * @param $request
+     * @return array
+     */
     public function all($request): array
     {
         try {
@@ -35,6 +39,10 @@ final class GroupService extends BaseService
         }
     }
 
+    /**
+     * @param $request
+     * @return array
+     */
     public function save($request): array
     {
         try {
@@ -55,11 +63,20 @@ final class GroupService extends BaseService
         }
     }
 
+    /**
+     * @param $group
+     * @return array
+     */
     public function getByModel($group): array
     {
         return $this->serviceResponse(true, __('success.get_data'), 200, $group);
     }
 
+    /**
+     * @param $request
+     * @param $group
+     * @return array
+     */
     public function update($request, $group): array
     {
         try {
@@ -153,6 +170,24 @@ final class GroupService extends BaseService
             ->where('group_id', $groupId)
             ->where('type', 'admin')
             ->exists();
+    }
+
+    /**
+     * @param $request
+     * @return array
+     */
+    public function userHasGroup($request): array
+    {
+        $groupUser = GroupUser::query()->where('user_id', $request->user('api')->id)->first();
+        $code = 200;
+        $message = __('success.get_data');
+        $status = true;
+        if (!isset($groupUser)) {
+            $code = 404;
+            $message = __('fail.user_has_no_group');
+            $status = false;
+        }
+        return $this->serviceResponse($status, $message, $code, $groupUser);
     }
 
     /**

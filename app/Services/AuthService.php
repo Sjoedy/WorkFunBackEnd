@@ -34,6 +34,7 @@ final class AuthService extends BaseService
             $user->surname = $request->surname;
             $user->email = $request->email;
             $user->tel = $request->tel;
+            $user->position = $request->position;
             $user->password = Hash::make($request->password);
             $user->save();
             $credentials = $this->checkCredentials($user->email, $request->password);

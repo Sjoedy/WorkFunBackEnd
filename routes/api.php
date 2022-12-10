@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\GroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,13 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('join/group', [GroupController::class, 'joinGroup']);
     //show member in group
     Route::get('group/info/{groupId}', [GroupController::class, 'groupInfo']);
+    //check user has group
+    Route::get('user/has/group', [GroupController::class, 'userHasGroup']);
+
+    /*
+     * challenge management
+     */
+    Route::apiResource('challenge', ChallengeController::class);
 
     Route::get('logout', [AuthController::class, 'logout']);
 });
