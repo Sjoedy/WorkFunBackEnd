@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 final class AuthService extends BaseService
 {
@@ -39,7 +40,9 @@ final class AuthService extends BaseService
             $data = ['user' => $user, 'credentials' => $credentials];
             return $this->serviceResponse(true, __('success.register_success'), 200, $data);
         } catch (Exception $e) {
-            return $this->serviceResponse(false, $e->getMessage(), 500, null);
+            $e = FlattenException::create($e);
+            $code = $e->getStatusCode();
+            return $this->serviceResponse(false, $e->getMessage(), $code, null);
         }
     }
 
@@ -61,7 +64,9 @@ final class AuthService extends BaseService
             }
             return $this->serviceResponse(false, __('fail.invalid_credential'), 401, null);
         } catch (Exception $e) {
-            return $this->serviceResponse(false, $e->getMessage(), 500, null);
+            $e = FlattenException::create($e);
+            $code = $e->getStatusCode();
+            return $this->serviceResponse(false, $e->getMessage(), $code, null);
         }
     }
 
@@ -77,7 +82,9 @@ final class AuthService extends BaseService
             }
             return $this->serviceResponse(false, __('fail.token_not_found'), 401, null);
         } catch (Exception $e) {
-            return $this->serviceResponse(false, $e->getMessage(), 500, null);
+            $e = FlattenException::create($e);
+            $code = $e->getStatusCode();
+            return $this->serviceResponse(false, $e->getMessage(), $code, null);
         }
     }
 

@@ -7,6 +7,7 @@ use App\Models\GroupUser;
 use App\Services\Base\BaseService;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 final class GroupService extends BaseService
 {
@@ -28,7 +29,9 @@ final class GroupService extends BaseService
             $data = $this->formatQuery($request, $groupQuery);
             return $this->serviceResponse(true, __('success.get_data'), 200, $data);
         } catch (Exception $e) {
-            return $this->serviceResponse(false, $e->getMessage(), 500, null);
+            $e = FlattenException::create($e);
+            $code = $e->getStatusCode();
+            return $this->serviceResponse(false, $e->getMessage(), $code, null);
         }
     }
 
@@ -46,7 +49,9 @@ final class GroupService extends BaseService
             return $this->serviceResponse(true, __('success.save_data'), 200, $group);
         } catch (Exception $e) {
             DB::rollback();
-            return $this->serviceResponse(false, $e->getMessage(), 500, null);
+            $e = FlattenException::create($e);
+            $code = $e->getStatusCode();
+            return $this->serviceResponse(false, $e->getMessage(), $code, null);
         }
     }
 
@@ -67,7 +72,9 @@ final class GroupService extends BaseService
             $group->save();
             return $this->serviceResponse(true, __('success.save_data'), 200, $group);
         } catch (Exception $e) {
-            return $this->serviceResponse(false, $e->getMessage(), 500, null);
+            $e = FlattenException::create($e);
+            $code = $e->getStatusCode();
+            return $this->serviceResponse(false, $e->getMessage(), $code, null);
         }
     }
 
@@ -85,13 +92,34 @@ final class GroupService extends BaseService
         return $this->serviceResponse(true, __('success.group_joined_success'), 200, $group);
     }
 
-    public function listGroupUser($groupId)
+    /**
+     * @param $request
+     * @param $groupId
+     * @return array
+     */
+    public function groupInfo($request, $groupId): array
     {
-        $group = Group::query()->where('id', $groupId)->exists();
-        if (!$group) {
-            abort(404, __('fail.group_not_found'));
+        try {
+            $user = $request->user('api');
+            $group = Group::query()->where('id', $groupId)->first();
+            $checkUserInGroup = GroupUser::query()->where('user_id', $user->id)->where('group_id', $groupId)->exists();
+            if (!isset($group) || !$checkUserInGroup) {
+                abort(404, __('fail.group_not_found'));
+            }
+            $groupUserQuery = GroupUser::query()->where('group_id', $groupId)
+                ->with(['user', 'group']);
+            $groupUser = $this->formatQuery($request, $groupUserQuery);
+            $data = [
+                'group_info' => $group,
+                'group_user' => $groupUser
+            ];
+            return $this->serviceResponse(true, __('success.get_data'), 200, $data);
+        } catch (Exception $e) {
+            $e = FlattenException::create($e);
+            $code = $e->getStatusCode();
+            return $this->serviceResponse(false, $e->getMessage(), $code, null);
         }
-        $userGroup = GroupUser::query()->where('group_id', $groupId);
+
     }
 
     /**
@@ -113,6 +141,11 @@ final class GroupService extends BaseService
         $groupUser->save();
     }
 
+    /**
+     * @param $userId
+     * @param $groupId
+     * @return bool
+     */
     public function isGroupAdmin($userId, $groupId): bool
     {
         return GroupUser::query()
@@ -122,6 +155,10 @@ final class GroupService extends BaseService
             ->exists();
     }
 
+    /**
+     * @param $length
+     * @return string
+     */
     public function groupCodeGenerate($length): string
     {
         $length = $length ?? 8;

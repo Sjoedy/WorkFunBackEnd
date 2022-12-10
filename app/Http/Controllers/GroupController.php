@@ -77,8 +77,13 @@ class GroupController extends Controller
         return $this->controllerResponse($this->groupService->joinGroup($request));
     }
 
-//    public function listGroupUser($groupId)
-//    {
-//        return $this->controllerResponse($this->groupService->listGroupUser($groupId));
-//    }
+    /**
+     * @param QueryRequest $request
+     * @param $groupId
+     * @return JsonResponse
+     */
+    public function groupInfo(QueryRequest $request, $groupId): JsonResponse
+    {
+        return $this->controllerResponse($this->groupService->groupInfo($request, $groupId));
+    }
 }

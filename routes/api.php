@@ -13,8 +13,10 @@ Route::group(['middleware' => ['auth:api']], function () {
      * Group management
      */
     Route::apiResource('group', GroupController::class)->except(['destroy']);
+    //apply to join group
     Route::post('join/group', [GroupController::class, 'joinGroup']);
-    Route::get('list/group/user/{groupId}', [GroupController::class, 'listGroupUser']);
+    //show member in group
+    Route::get('group/info/{groupId}', [GroupController::class, 'groupInfo']);
 
     Route::get('logout', [AuthController::class, 'logout']);
 });

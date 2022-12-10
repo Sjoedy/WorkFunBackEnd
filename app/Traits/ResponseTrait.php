@@ -75,6 +75,6 @@ trait ResponseTrait
     public function controllerResponse($data): JsonResponse
     {
         $responseData = $data['data'] ?? null;
-        return $data['success'] ? ($this->success($responseData, $data['message'])) : ($this->error($data['message']));
+        return $data['success'] ? ($this->success($responseData, $data['message'])) : ($this->error($data['message'], $data['code']));
     }
 }
