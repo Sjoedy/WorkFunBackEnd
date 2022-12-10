@@ -5,16 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ChallengeManagementRequest;
 use App\Http\Requests\QueryRequest;
 use App\Models\Challenge;
-use App\Services\AdminChallengeService;
+use App\Services\ChallengeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class AdminChallengeController extends Controller
+class ChallengeController extends Controller
 {
 
-    private AdminChallengeService $adminChallengeService;
+    private ChallengeService $adminChallengeService;
 
-    public function __construct(AdminChallengeService $adminChallengeService)
+    public function __construct(ChallengeService $adminChallengeService)
     {
         $this->adminChallengeService = $adminChallengeService;
     }
@@ -45,23 +45,28 @@ class AdminChallengeController extends Controller
      * Display the specified resource.
      *
      * @param Request $request
-     * @param $admin_challenge
+     * @param $challenge
      * @return JsonResponse
      */
-    public function show(Request $request, $admin_challenge): JsonResponse
+    public function show(Request $request, $challenge): JsonResponse
     {
-        return $this->controllerResponse($this->adminChallengeService->getByModel($request, $admin_challenge));
+        return $this->controllerResponse($this->adminChallengeService->getByModel($request, $challenge));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param ChallengeManagementRequest $request
-     * @param Challenge $admin_challenge
+     * @param Challenge $challenge
      * @return JsonResponse
      */
-    public function update(ChallengeManagementRequest $request, Challenge $admin_challenge): JsonResponse
+    public function update(ChallengeManagementRequest $request, Challenge $challenge): JsonResponse
     {
-        return $this->controllerResponse($this->adminChallengeService->update($request, $admin_challenge));
+        return $this->controllerResponse($this->adminChallengeService->update($request, $challenge));
+    }
+
+    public function updateChallenge(Request $request, $challenge): JsonResponse
+    {
+        return $this->controllerResponse($this->adminChallengeService->updateChallenge($request, $challenge));
     }
 }

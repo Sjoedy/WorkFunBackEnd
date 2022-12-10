@@ -1,9 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminChallengeController;
+use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\GroupController;
-use App\Http\Controllers\UserChallengeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,10 +25,11 @@ Route::group(['middleware' => ['auth:api']], function () {
     //check user has group
     Route::get('user/has/group', [GroupController::class, 'userHasGroup']);
 
-    // admin challenge management
-    Route::apiResource('admin-challenge', AdminChallengeController::class)->except(['destroy']);
-    // user challenge management
-    Route::apiResource('user-challenge', UserChallengeController::class)->except(['store', 'destroy']);
+    //challenge management
+    Route::apiResource('challenge', ChallengeController::class)->except(['destroy']);
+
+    //user update challenge
+    Route::put('update/challenge', [ChallengeController::class, 'updateChallenge']);
 
     Route::get('logout', [AuthController::class, 'logout']);
 });

@@ -10,7 +10,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
-final class AdminChallengeService extends BaseService
+final class ChallengeService extends BaseService
 {
     private Challenge $challenge;
     private GroupService $groupService;
@@ -155,6 +155,30 @@ final class AdminChallengeService extends BaseService
             $challenge_user->user_id = $user;
             $challenge_user->challenge_id = $challenge->id;
             $challenge_user->save();
+        }
+    }
+
+    public function updateChallenge($request, $challengeUserId): array
+    {
+        try {
+            $userId = $request->user('api')->id;
+            $challengeUser = ChallengeUser::query()->where('id', $challengeUserId)->where('user_id', $userId)->first();
+            if (!isset($challengeUser)) {
+                abort(404, __('fail.data_not_found'));
+            }
+            if (in_array($challengeUser->status, ['todo', 're-todo'])) {
+                $challengeUser->status = 'doing';
+            } elseif ($challengeUser->status == 'doing') {
+                $challengeUser->status = 'done';
+                $challengeUser->heat_score = $request->score ?? null;
+            } else {
+                abort(400, __('fail.done_challenge_can_not_update'));
+            }
+            $challengeUser->save();
+            return $this->serviceResponse(true, __('success.update_data'), 200, $challengeUser);
+        } catch (Exception $e) {
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
     }
 }

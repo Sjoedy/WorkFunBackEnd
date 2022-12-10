@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ChallengeUser;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Services\Base\BaseService;
@@ -144,6 +145,17 @@ final class GroupService extends BaseService
                 $groupUserQuery->where('user_id', '!=', $user->id);
             }
             $groupUser = $this->formatQuery($request, $groupUserQuery);
+            $groupUser->transform(function ($user){
+                $challengeUser = ChallengeUser::query()
+                    ->select(DB::raw('SUM(point) as point, SUM(heat_score)/COUNT(heat_score) as heat_score'))
+                    ->join('challenges','challenges.id','challenge_users.challenge_id')
+                    ->where('challenge_users.user_id', $user->user_id)
+                    ->where('challenge_users.status','done')
+                    ->first();
+                $user->point = $challengeUser->point;
+                $user->heat_point = $challengeUser->heat_score;
+                return $user;
+            });
             $data = [
                 'group_info' => $group,
                 'group_user' => $groupUser
