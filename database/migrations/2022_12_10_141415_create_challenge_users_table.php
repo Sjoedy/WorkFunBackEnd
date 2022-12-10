@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('challenge_id');
             $table->enum('status', ['todo', 'doing', 'done', 're-todo'])->default('todo');
+            $table->integer('heat_score')->nullable();
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')

@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->enum('type', ['task', 'activity']);
             $table->unsignedBigInteger('group_id');
             $table->integer('point');
-            $table->integer('score')->nullable();
             $table->foreign('group_id')
                 ->references('id')
                 ->on('groups')

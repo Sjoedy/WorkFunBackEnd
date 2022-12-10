@@ -80,9 +80,11 @@ final class AuthService extends BaseService
         try {
             $userId = $id ?? $request->user('api')->id;
             $user = User::query()->where('id', $userId)->first();
-            $point = ChallengeUser::query()
-                ->where('')
-                ->join('challenges','challenges.id','challenge_users.challenge_id');
+//            $point = ChallengeUser::query()
+//                ->select(DB::raw('SUM(challenges.point) as point'))
+//                ->where('challenge_users.user_id', $userId)
+//                ->join('challenges','challenges.id','challenge_users.challenge_id')
+//                ->groupBy('challenge_users.id');
             return $this->serviceResponse(true, __('success.get_data'), 200, $user);
         } catch (Exception $e) {
             $info = $this->exceptionService->getInfo($e);

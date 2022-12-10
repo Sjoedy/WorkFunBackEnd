@@ -12,23 +12,26 @@ use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 final class AdminChallengeService extends BaseService
 {
-
     private Challenge $challenge;
     private GroupService $groupService;
     private ExceptionService $exceptionService;
+    private ChallengeUser $challengeUser;
 
     /**
      * @param Challenge $challenge
+     * @param ChallengeUser $challengeUser
      * @param GroupService $groupService
      * @param ExceptionService $exceptionService
      */
-    public function __construct(Challenge        $challenge,
-                                GroupService     $groupService,
-                                ExceptionService $exceptionService)
+    public function __construct(Challenge            $challenge,
+                                ChallengeUser        $challengeUser,
+                                GroupService         $groupService,
+                                ExceptionService     $exceptionService)
     {
         $this->challenge = $challenge;
         $this->groupService = $groupService;
         $this->exceptionService = $exceptionService;
+        $this->challengeUser = $challengeUser;
     }
 
     /**
@@ -38,8 +41,19 @@ final class AdminChallengeService extends BaseService
     public function all($request): array
     {
         try {
-            $challengeQuery = $this->challenge->query();
-            $data = $this->formatQuery($request, $challengeQuery);
+            $user = $request->user('api');
+            $groupId = $this->groupService->checkGroupId($request);
+            $isGroupAdmin = $this->groupService->isGroupAdmin($user->id, $groupId);
+            $challengeUserQuery = $this->challengeUser->query();
+            $challengeUserQuery->join('challenges', 'challenges.id', 'challenge_users.challenge_id')
+                ->with(['user', 'challenge']);
+            if ($isGroupAdmin) {
+                $challengeUserQuery->where('challenges.group_id', $groupId);
+            } else {
+                $challengeUserQuery->where('challenge_users.user_id', $user->id);
+            }
+
+            $data = $this->formatQuery($request, $challengeUserQuery, [], ['status']);
             return $this->serviceResponse(true, __('success.get_data'), 200, $data);
         } catch (Exception $e) {
             $info = $this->exceptionService->getInfo($e);
@@ -56,11 +70,7 @@ final class AdminChallengeService extends BaseService
         DB::beginTransaction();
         try {
             $user = $request->user('api');
-            $checkGroupId = $this->groupService->userHasGroup($request);
-            if (!$checkGroupId['success']) {
-                abort(404, ($checkGroupId['message']));
-            }
-            $groupId = $checkGroupId['data']['group_id'];
+            $groupId = $this->groupService->checkGroupId($request);
             $isGroupAdmin = $this->groupService->isGroupAdmin($user->id, $groupId);
             if (!$isGroupAdmin) {
                 abort(403, __('fail.no_permission'));
@@ -90,16 +100,12 @@ final class AdminChallengeService extends BaseService
     public function getByModel($request, $challenge): array
     {
         try {
-            $checkGroupId = $this->groupService->userHasGroup($request);
-            if (!$checkGroupId['success']) {
-                abort(404, $checkGroupId['message']);
-            }
-            $groupId = $checkGroupId['data']['group_id'];
-            $challenge = Challenge::query()->where('group_id', $groupId)->where('challenge_id', $challenge)->first();
-            if (!isset($challenge)) {
+            $groupId = $this->groupService->checkGroupId($request);
+            $data = Challenge::query()->where('group_id', $groupId)->where('challenge_id', $challenge)->first();
+            if (!isset($data)) {
                 abort(404, __('fail.data_not_found'));
             }
-            return $this->serviceResponse(true, __('success.get_data'), 200, $challenge);
+            return $this->serviceResponse(true, __('success.get_data'), 200, $data);
         } catch (Exception $e) {
             $info = $this->exceptionService->getInfo($e);
             return $this->serviceResponse(false, $info['message'], $info['code'], null);
@@ -114,11 +120,7 @@ final class AdminChallengeService extends BaseService
     public function update($request, $challenge): array
     {
         try {
-            $checkGroupId = $this->groupService->userHasGroup($request);
-            if (!$checkGroupId['success']) {
-                abort(404, ($checkGroupId['message']));
-            }
-            $groupId = $checkGroupId['data']['group_id'];
+            $groupId = $this->groupService->checkGroupId($request);
             $isGroupAdmin = $this->groupService->isGroupAdmin($request->user('api')->id, $groupId);
             if (!$isGroupAdmin) {
                 abort(403, __('fail.no_permission'));

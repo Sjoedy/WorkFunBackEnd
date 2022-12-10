@@ -45,23 +45,23 @@ class AdminChallengeController extends Controller
      * Display the specified resource.
      *
      * @param Request $request
-     * @param $challenge
+     * @param $admin_challenge
      * @return JsonResponse
      */
-    public function show(Request $request, $challenge): JsonResponse
+    public function show(Request $request, $admin_challenge): JsonResponse
     {
-        return $this->controllerResponse($this->adminChallengeService->getByModel($request, $challenge));
+        return $this->controllerResponse($this->adminChallengeService->getByModel($request, $admin_challenge));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param ChallengeManagementRequest $request
-     * @param Challenge $challenge
+     * @param Challenge $admin_challenge
      * @return JsonResponse
      */
-    public function update(ChallengeManagementRequest $request, Challenge $challenge): JsonResponse
+    public function update(ChallengeManagementRequest $request, Challenge $admin_challenge): JsonResponse
     {
-        return $this->controllerResponse($this->adminChallengeService->update($request, $challenge));
+        return $this->controllerResponse($this->adminChallengeService->update($request, $admin_challenge));
     }
 }

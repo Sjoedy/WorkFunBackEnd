@@ -226,4 +226,14 @@ final class GroupService extends BaseService
         }
         return $code;
     }
+
+
+    public function checkGroupId($request)
+    {
+        $checkGroupId = self::userHasGroup($request);
+        if (!$checkGroupId['success']) {
+            abort(404, $checkGroupId['message']);
+        }
+        return $checkGroupId['data']['group_id'];
+    }
 }
