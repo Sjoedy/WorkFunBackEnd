@@ -2,6 +2,7 @@
 
 return [
     'no_permission' => 'Error, user has no permission to do this.',
+    'user_has_already_assigned_challenge' => 'Error, user has already assigned challenge.',
     'user_already_in_group' => 'Error, user already in group.',
     'user_has_no_group' => 'Error, user has no group.',
     'group_not_found' => 'Error, group not found.',

@@ -27,6 +27,7 @@ return new class extends Migration {
                 ->on('challenges')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

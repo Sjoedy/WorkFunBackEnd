@@ -13,13 +13,17 @@ final class GroupService extends BaseService
 {
 
     private Group $group;
+    private ExceptionService $exceptionService;
 
     /**
      * @param Group $group
+     * @param ExceptionService $exceptionService
      */
-    public function __construct(Group $group)
+    public function __construct(Group            $group,
+                                ExceptionService $exceptionService)
     {
         $this->group = $group;
+        $this->exceptionService = $exceptionService;
     }
 
     /**
@@ -33,9 +37,8 @@ final class GroupService extends BaseService
             $data = $this->formatQuery($request, $groupQuery);
             return $this->serviceResponse(true, __('success.get_data'), 200, $data);
         } catch (Exception $e) {
-            $e = FlattenException::create($e);
-            $code = $e->getStatusCode();
-            return $this->serviceResponse(false, $e->getMessage(), $code, null);
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
     }
 
@@ -45,6 +48,7 @@ final class GroupService extends BaseService
      */
     public function save($request): array
     {
+        DB::beginTransaction();
         try {
             $user = $request->user('api');
             $group = $this->group->newInstance();
@@ -57,9 +61,8 @@ final class GroupService extends BaseService
             return $this->serviceResponse(true, __('success.save_data'), 200, $group);
         } catch (Exception $e) {
             DB::rollback();
-            $e = FlattenException::create($e);
-            $code = $e->getStatusCode();
-            return $this->serviceResponse(false, $e->getMessage(), $code, null);
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
     }
 
@@ -69,7 +72,12 @@ final class GroupService extends BaseService
      */
     public function getByModel($group): array
     {
-        return $this->serviceResponse(true, __('success.get_data'), 200, $group);
+        try {
+            return $this->serviceResponse(true, __('success.get_data'), 200, $group);
+        } catch (Exception $e) {
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
+        }
     }
 
     /**
@@ -89,9 +97,8 @@ final class GroupService extends BaseService
             $group->save();
             return $this->serviceResponse(true, __('success.save_data'), 200, $group);
         } catch (Exception $e) {
-            $e = FlattenException::create($e);
-            $code = $e->getStatusCode();
-            return $this->serviceResponse(false, $e->getMessage(), $code, null);
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
     }
 
@@ -104,9 +111,14 @@ final class GroupService extends BaseService
      */
     public function joinGroup($request): array
     {
-        $group = Group::query()->where('code', $request->code)->first();
-        self::addMember($request->user('api'), $group, 'member');
-        return $this->serviceResponse(true, __('success.group_joined_success'), 200, $group);
+        try {
+            $group = Group::query()->where('code', $request->code)->first();
+            self::addMember($request->user('api'), $group, 'member');
+            return $this->serviceResponse(true, __('success.group_joined_success'), 200, $group);
+        } catch (Exception $e) {
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
+        }
     }
 
     /**
@@ -124,7 +136,10 @@ final class GroupService extends BaseService
                 abort(404, __('fail.group_not_found'));
             }
             $groupUserQuery = GroupUser::query()->where('group_id', $groupId)
-                ->with(['user', 'group']);
+                ->with(['user']);
+            if (!isset($request->ignore_self)) {
+                $groupUserQuery->where('user_id', '!=', $user->id);
+            }
             $groupUser = $this->formatQuery($request, $groupUserQuery);
             $data = [
                 'group_info' => $group,
@@ -132,9 +147,8 @@ final class GroupService extends BaseService
             ];
             return $this->serviceResponse(true, __('success.get_data'), 200, $data);
         } catch (Exception $e) {
-            $e = FlattenException::create($e);
-            $code = $e->getStatusCode();
-            return $this->serviceResponse(false, $e->getMessage(), $code, null);
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
 
     }
@@ -178,16 +192,21 @@ final class GroupService extends BaseService
      */
     public function userHasGroup($request): array
     {
-        $groupUser = GroupUser::query()->where('user_id', $request->user('api')->id)->first();
-        $code = 200;
-        $message = __('success.get_data');
-        $status = true;
-        if (!isset($groupUser)) {
-            $code = 404;
-            $message = __('fail.user_has_no_group');
-            $status = false;
+        try {
+            $groupUser = GroupUser::query()->where('user_id', $request->user('api')->id)->first() ?? null;
+            $code = 200;
+            $message = __('success.get_data');
+            $status = true;
+            if (!isset($groupUser)) {
+                $code = 404;
+                $message = __('fail.user_has_no_group');
+                $status = false;
+            }
+            return $this->serviceResponse($status, $message, $code, $groupUser);
+        } catch (Exception $e) {
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
-        return $this->serviceResponse($status, $message, $code, $groupUser);
     }
 
     /**

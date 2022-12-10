@@ -13,13 +13,17 @@ use Symfony\Component\ErrorHandler\Exception\FlattenException;
 final class AuthService extends BaseService
 {
     private User $user;
+    private ExceptionService $exceptionService;
 
     /**
      * @param User $user
+     * @param ExceptionService $exceptionService
      */
-    public function __construct(User $user)
+    public function __construct(User             $user,
+                                ExceptionService $exceptionService)
     {
         $this->user = $user;
+        $this->exceptionService = $exceptionService;
     }
 
     /**
@@ -41,9 +45,8 @@ final class AuthService extends BaseService
             $data = ['user' => $user, 'credentials' => $credentials];
             return $this->serviceResponse(true, __('success.register_success'), 200, $data);
         } catch (Exception $e) {
-            $e = FlattenException::create($e);
-            $code = $e->getStatusCode();
-            return $this->serviceResponse(false, $e->getMessage(), $code, null);
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
     }
 
@@ -65,9 +68,8 @@ final class AuthService extends BaseService
             }
             return $this->serviceResponse(false, __('fail.invalid_credential'), 401, null);
         } catch (Exception $e) {
-            $e = FlattenException::create($e);
-            $code = $e->getStatusCode();
-            return $this->serviceResponse(false, $e->getMessage(), $code, null);
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
     }
 
@@ -83,9 +85,8 @@ final class AuthService extends BaseService
             }
             return $this->serviceResponse(false, __('fail.token_not_found'), 401, null);
         } catch (Exception $e) {
-            $e = FlattenException::create($e);
-            $code = $e->getStatusCode();
-            return $this->serviceResponse(false, $e->getMessage(), $code, null);
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
     }
 

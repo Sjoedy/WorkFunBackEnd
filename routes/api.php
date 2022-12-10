@@ -24,7 +24,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     /*
      * challenge management
      */
-    Route::apiResource('challenge', ChallengeController::class);
+    Route::apiResource('challenge', ChallengeController::class)->except(['destroy']);
 
     Route::get('logout', [AuthController::class, 'logout']);
 });

@@ -28,7 +28,9 @@ class ChallengeManagementRequest extends FormRequest
             'title' => 'required',
             'description' => 'required',
             'type' => ['required', Rule::in(['task', 'activity'])],
-            'point' => ['required', 'numeric', Rule::in([25, 50, 75, 100])]
+            'point' => ['required', 'numeric', Rule::in([25, 50, 75, 100])],
+            'users' => ['required', 'array'],
+            'users.*' => ['required', Rule::exists('users', 'id')],
         ];
     }
 }

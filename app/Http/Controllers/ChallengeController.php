@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ChallengeManagementRequest;
 use App\Http\Requests\QueryRequest;
+use App\Models\Challenge;
 use App\Services\ChallengeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,45 +44,24 @@ class ChallengeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $challenge
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show(Request $request, $challenge): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return $this->controllerResponse($this->challengeService->getByModel($request, $challenge));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param ChallengeManagementRequest $request
+     * @param Challenge $challenge
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(ChallengeManagementRequest $request, Challenge $challenge): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return $this->controllerResponse($this->challengeService->update($request, $challenge));
     }
 }
