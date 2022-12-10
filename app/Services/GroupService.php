@@ -123,19 +123,22 @@ final class GroupService extends BaseService
 
     /**
      * @param $request
-     * @param $groupId
      * @return array
      */
-    public function groupInfo($request, $groupId): array
+    public function groupInfo($request): array
     {
         try {
             $user = $request->user('api');
-            $group = Group::query()->where('id', $groupId)->first();
-            $checkUserInGroup = GroupUser::query()->where('user_id', $user->id)->where('group_id', $groupId)->exists();
-            if (!isset($group) || !$checkUserInGroup) {
+            $groupUser = GroupUser::query()->where('user_id', $user->id)->first();
+            if (!isset($groupUser)){
                 abort(404, __('fail.group_not_found'));
             }
-            $groupUserQuery = GroupUser::query()->where('group_id', $groupId)
+            $group = Group::query()->where('id', $groupUser->group_id)->first();
+            $checkUserInGroup = GroupUser::query()->where('user_id', $user->id)->where('group_id', $group->id)->exists();
+            if (!$checkUserInGroup) {
+                abort(404, __('fail.group_not_found'));
+            }
+            $groupUserQuery = GroupUser::query()->where('group_id', $group->id)
                 ->with(['user']);
             if (!isset($request->ignore_self)) {
                 $groupUserQuery->where('user_id', '!=', $user->id);

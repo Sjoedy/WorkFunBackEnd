@@ -79,12 +79,11 @@ class GroupController extends Controller
 
     /**
      * @param QueryRequest $request
-     * @param $groupId
      * @return JsonResponse
      */
-    public function groupInfo(QueryRequest $request, $groupId): JsonResponse
+    public function groupInfo(QueryRequest $request): JsonResponse
     {
-        return $this->controllerResponse($this->groupService->groupInfo($request, $groupId));
+        return $this->controllerResponse($this->groupService->groupInfo($request));
     }
 
     /**

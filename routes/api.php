@@ -17,7 +17,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     //apply to join group
     Route::post('join/group', [GroupController::class, 'joinGroup']);
     //show member in group
-    Route::get('group/info/{groupId}', [GroupController::class, 'groupInfo']);
+    Route::get('info/group', [GroupController::class, 'groupInfo']);
     //check user has group
     Route::get('user/has/group', [GroupController::class, 'userHasGroup']);
 
