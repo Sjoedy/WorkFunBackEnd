@@ -65,8 +65,8 @@ class ChallengeController extends Controller
         return $this->controllerResponse($this->adminChallengeService->update($request, $challenge));
     }
 
-    public function updateChallenge(Request $request, $challenge): JsonResponse
+    public function updateChallenge(Request $request, $id): JsonResponse
     {
-        return $this->controllerResponse($this->adminChallengeService->updateChallenge($request, $challenge));
+        return $this->controllerResponse($this->adminChallengeService->updateChallenge($request, $id));
     }
 }

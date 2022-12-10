@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::apiResource('challenge', ChallengeController::class)->except(['destroy']);
 
     //user update challenge
-    Route::put('update/challenge', [ChallengeController::class, 'updateChallenge']);
+    Route::put('update/challenge/{id}', [ChallengeController::class, 'updateChallenge']);
 
     Route::get('logout', [AuthController::class, 'logout']);
 });
