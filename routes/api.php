@@ -12,6 +12,8 @@ Route::post('login', [AuthController::class, 'login']);
 Route::group(['middleware' => ['auth:api']], function () {
     //self info
     Route::get('me',[AuthController::class, 'me']);
+    //other info
+    Route::get('other/{id}',[AuthController::class, 'other']);
     /*
      * Group management
      */

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Challenge;
+use App\Models\ChallengeUser;
 use App\Models\User;
 use App\Services\Base\BaseService;
 use Exception;
@@ -73,10 +75,14 @@ final class AuthService extends BaseService
         }
     }
 
-    public function me($request): array
+    public function me($request, $id = null): array
     {
         try {
-            $user = User::query()->where('id', $request->user('api')->id)->first();
+            $userId = $id ?? $request->user('api')->id;
+            $user = User::query()->where('id', $userId)->first();
+            $point = ChallengeUser::query()
+                ->where('')
+                ->join('challenges','challenges.id','challenge_users.challenge_id');
             return $this->serviceResponse(true, __('success.get_data'), 200, $user);
         } catch (Exception $e) {
             $info = $this->exceptionService->getInfo($e);

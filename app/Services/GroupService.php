@@ -140,7 +140,7 @@ final class GroupService extends BaseService
             }
             $groupUserQuery = GroupUser::query()->where('group_id', $group->id)
                 ->with(['user']);
-            if (!isset($request->ignore_self)) {
+            if (isset($request->ignore_self)) {
                 $groupUserQuery->where('user_id', '!=', $user->id);
             }
             $groupUser = $this->formatQuery($request, $groupUserQuery);

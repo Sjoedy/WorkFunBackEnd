@@ -48,6 +48,11 @@ class AuthController extends Controller
         return $this->controllerResponse($this->authService->me($request));
     }
 
+    public function other(Request $request, $id): JsonResponse
+    {
+        return $this->controllerResponse($this->authService->me($request, $id));
+    }
+
     /**
      * @return JsonResponse
      */
