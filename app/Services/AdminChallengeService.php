@@ -10,7 +10,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
-final class ChallengeService extends BaseService
+final class AdminChallengeService extends BaseService
 {
 
     private Challenge $challenge;
@@ -72,7 +72,7 @@ final class ChallengeService extends BaseService
             $challenge->group_id = $groupId;
             $challenge->point = $request->point;
             $challenge->save();
-            self::challengeAssign($request->users, $challenge);
+            self::challengeAssign($request->users, $challenge, 'save');
             DB::commit();
             return $this->serviceResponse(true, __('success.save_data'), 200, $challenge);
         } catch (Exception $e) {
@@ -114,7 +114,12 @@ final class ChallengeService extends BaseService
     public function update($request, $challenge): array
     {
         try {
-            $isGroupAdmin = $this->groupService->isGroupAdmin($request->user('api')->id, $challenge->id);
+            $checkGroupId = $this->groupService->userHasGroup($request);
+            if (!$checkGroupId['success']) {
+                abort(404, ($checkGroupId['message']));
+            }
+            $groupId = $checkGroupId['data']['group_id'];
+            $isGroupAdmin = $this->groupService->isGroupAdmin($request->user('api')->id, $groupId);
             if (!$isGroupAdmin) {
                 abort(403, __('fail.no_permission'));
             }
@@ -123,7 +128,7 @@ final class ChallengeService extends BaseService
             $challenge->type = $request->type;
             $challenge->point = $request->point;
             $challenge->save();
-            self::challengeAssign($request->users, $challenge);
+            self::challengeAssign($request->users, $challenge, 'update');
             return $this->serviceResponse(true, __('success.save_data'), 200, $challenge);
         } catch (Exception $e) {
             $info = $this->exceptionService->getInfo($e);
@@ -131,12 +136,18 @@ final class ChallengeService extends BaseService
         }
     }
 
-    public function challengeAssign(array $users, $challenge)
+    public function challengeAssign(array $users, $challenge, $action)
     {
+        //delete old user in challenge
+        if ($action == 'update') ChallengeUser::query()->where('challenge_id', $challenge->id)->whereNotIn('user_id', $users)->delete();
         foreach ($users as $user) {
             $checkOldChallenge = ChallengeUser::query()->where('user_id', $user)->where('challenge_id', $challenge->id)->exists();
-            if ($checkOldChallenge) {
-                abort(400, __('fail.user_has_already_assigned_challenge'));
+            if ($action == 'store') {
+                if ($checkOldChallenge) {
+                    abort(400, __('fail.user_has_already_assigned_challenge'));
+                }
+            } else {
+                if ($checkOldChallenge) continue;
             }
             $challenge_user = new ChallengeUser();
             $challenge_user->user_id = $user;

@@ -73,6 +73,17 @@ final class AuthService extends BaseService
         }
     }
 
+    public function me($request): array
+    {
+        try {
+            $user = User::query()->where('id', $request->user('api')->id)->first();
+            return $this->serviceResponse(true, __('success.get_data'), 200, $user);
+        } catch (Exception $e) {
+            $info = $this->exceptionService->getInfo($e);
+            return $this->serviceResponse(false, $info['message'], $info['code'], null);
+        }
+    }
+
     /**
      * @return array
      */

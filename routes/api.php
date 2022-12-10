@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\AdminChallengeController;
 use App\Http\Controllers\GroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -10,6 +10,8 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:api']], function () {
+    //self info
+    Route::get('me',[AuthController::class, 'me']);
     /*
      * Group management
      */
@@ -22,9 +24,9 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::get('user/has/group', [GroupController::class, 'userHasGroup']);
 
     /*
-     * challenge management
+     * admin challenge management
      */
-    Route::apiResource('challenge', ChallengeController::class)->except(['destroy']);
+    Route::apiResource('challenge', AdminChallengeController::class)->except(['destroy']);
 
     Route::get('logout', [AuthController::class, 'logout']);
 });
