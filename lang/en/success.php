@@ -8,4 +8,5 @@ return [
     'save_data' => 'Save data successfully.',
     'update_data' => 'Update data successfully.',
     'register_success' => 'Register successfully.',
+    'group_joined_success' => 'Group joined successfully.',
 ];

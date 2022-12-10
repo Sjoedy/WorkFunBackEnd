@@ -13,12 +13,12 @@ trait ResponseTrait
      * Core of response
      *
      * @param object|array|null $data
-     * @param string $message
+     * @param $message
      * @param integer $statusCode
      * @param boolean $isSuccess
      * @return JsonResponse
      */
-    public function coreResponse(object|array|null $data, string $message, int $statusCode, bool $isSuccess = true): JsonResponse
+    public function coreResponse(object|array|null $data, $message, int $statusCode, bool $isSuccess = true): JsonResponse
     {
         if ($isSuccess) {
             $resData = [
@@ -46,11 +46,11 @@ trait ResponseTrait
      * Send any success response
      *
      * @param object|bool|array $data
-     * @param string $message
+     * @param $message
      * @param integer $statusCode
      * @return JsonResponse
      */
-    public function success(object|bool|array|null $data, string $message, int $statusCode = 200): JsonResponse
+    public function success(object|bool|array|null $data, $message, int $statusCode = 200): JsonResponse
     {
         return $this->coreResponse($data, $message, $statusCode);
     }
@@ -58,12 +58,12 @@ trait ResponseTrait
     /**
      * Send any error response
      *
-     * @param string $message
+     * @param $message
      * @param integer $statusCode
      * @param null $data
      * @return JsonResponse
      */
-    public function error(string $message, int $statusCode = 500, $data = null): JsonResponse
+    public function error($message, int $statusCode = 500, $data = null): JsonResponse
     {
         return $this->coreResponse($data, $message, $statusCode, false);
     }
@@ -72,8 +72,9 @@ trait ResponseTrait
      * @param $data
      * @return JsonResponse
      */
-    public function returnController($data): JsonResponse
+    public function controllerResponse($data): JsonResponse
     {
-        return $data['success'] ? ($this->success($data['data'], $data['message'])) : ($this->error($data['data'], $data['message']));
+        $responseData = $data['data'] ?? null;
+        return $data['success'] ? ($this->success($responseData, $data['message'])) : ($this->error($data['message']));
     }
 }

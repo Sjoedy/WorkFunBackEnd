@@ -2,6 +2,8 @@
 
 return [
     'no_permission' => 'Error, user has no permission to do this.',
+    'user_already_in_group' => 'Error, user already in group.',
+    'group_not_found' => 'Error, group not found.',
     'invalid_credential' => 'Error, invalid credentials.',
     'route_not_found' => 'Error, route not found.',
     'token_expired' => 'Error, token is Expired.',

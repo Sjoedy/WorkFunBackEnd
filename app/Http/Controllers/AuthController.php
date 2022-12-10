@@ -21,18 +21,29 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
+    /**
+     * @param RegisterRequest $request
+     * @return JsonResponse
+     */
     public function register(RegisterRequest $request): JsonResponse
     {
-        return $this->returnController($this->authService->register($request));
+        return $this->controllerResponse($this->authService->register($request));
     }
 
+    /**
+     * @param LoginRequest $request
+     * @return JsonResponse
+     */
     public function login(LoginRequest $request): JsonResponse
     {
-        return $this->returnController($this->authService->login($request));
+        return $this->controllerResponse($this->authService->login($request));
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function logout(): JsonResponse
     {
-        return $this->returnController($this->authService->logout());
+        return $this->controllerResponse($this->authService->logout());
     }
 }

@@ -23,10 +23,9 @@ final class AuthService extends BaseService
 
     /**
      * @param $request
-     * @param bool $withCredentials
      * @return array
      */
-    public function register($request, bool $withCredentials = true): array
+    public function register($request): array
     {
         try {
             $user = $this->user->newInstance();
@@ -38,9 +37,9 @@ final class AuthService extends BaseService
             $user->save();
             $credentials = $this->checkCredentials($user->email, $request->password);
             $data = ['user' => $user, 'credentials' => $credentials];
-            return $this->serviceReturn(true, __('success.register_success'), 200, $data);
+            return $this->serviceResponse(true, __('success.register_success'), 200, $data);
         } catch (Exception $e) {
-            return $this->serviceReturn(false, $e->getMessage(), 500, $e);
+            return $this->serviceResponse(false, $e->getMessage(), 500, null);
         }
     }
 
@@ -54,27 +53,15 @@ final class AuthService extends BaseService
             $response = $this->checkCredentials($request->credentials, $request->password);
             if (!empty($response['access_token'])) {
                 $user = User::query()->where('email', $request->credentials)->firstOrFail();
-//                $user->load(['roles.permissions', 'permissions']);
                 $data = [
                     'credentials' => $response,
                     'user' => $user
                 ];
-                return $this->serviceReturn(true, __('success.get_data'), 200, $data);
+                return $this->serviceResponse(true, __('success.get_data'), 200, $data);
             }
-            return $this->serviceReturn(false, __('fail.invalid_credential'), 401, null);
+            return $this->serviceResponse(false, __('fail.invalid_credential'), 401, null);
         } catch (Exception $e) {
-            return $this->serviceReturn(false, $e->getMessage(), 500, null);
-        }
-    }
-
-    public function me(): array
-    {
-        try {
-            $user = auth()->user();
-            $user->load(['roles.permissions', 'permissions']);
-            return $this->serviceReturn(true, __('success.get_data'), 200, $user);
-        } catch (Exception $e) {
-            return $this->serviceReturn(false, $e->getMessage(), 500, null);
+            return $this->serviceResponse(false, $e->getMessage(), 500, null);
         }
     }
 
@@ -86,11 +73,11 @@ final class AuthService extends BaseService
         try {
             $logout = auth()->user()->token()->revoke();
             if ($logout) {
-                return $this->serviceReturn(true, __('success.logged_out'), 200, null);
+                return $this->serviceResponse(true, __('success.logged_out'), 200, null);
             }
-            return $this->serviceReturn(false, __('fail.token_not_found'), 401, null);
+            return $this->serviceResponse(false, __('fail.token_not_found'), 401, null);
         } catch (Exception $e) {
-            return $this->serviceReturn(false, $e->getMessage(), 500, null);
+            return $this->serviceResponse(false, $e->getMessage(), 500, null);
         }
     }
 
