@@ -20,7 +20,7 @@ class ChallengeController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the challenge.
      *
      * @param QueryRequest $request
      * @return JsonResponse
@@ -31,7 +31,7 @@ class ChallengeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new challenge
      *
      * @param ChallengeManagementRequest $request
      * @return JsonResponse
@@ -42,7 +42,7 @@ class ChallengeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the challenge.
      *
      * @param Request $request
      * @param $challenge
@@ -54,7 +54,7 @@ class ChallengeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified challenge.
      *
      * @param ChallengeManagementRequest $request
      * @param Challenge $challenge
@@ -65,6 +65,11 @@ class ChallengeController extends Controller
         return $this->controllerResponse($this->adminChallengeService->update($request, $challenge));
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
     public function updateChallenge(Request $request, $id): JsonResponse
     {
         return $this->controllerResponse($this->adminChallengeService->updateChallenge($request, $id));

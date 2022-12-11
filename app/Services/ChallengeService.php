@@ -4,11 +4,9 @@ namespace App\Services;
 
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
-use App\Models\GroupUser;
 use App\Services\Base\BaseService;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 final class ChallengeService extends BaseService
 {
@@ -161,6 +159,11 @@ final class ChallengeService extends BaseService
         }
     }
 
+    /**
+     * @param $request
+     * @param $challengeUserId
+     * @return array
+     */
     public function updateChallenge($request, $challengeUserId): array
     {
         try {

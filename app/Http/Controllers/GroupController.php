@@ -9,7 +9,6 @@ use App\Models\Group;
 use App\Services\GroupService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class GroupController extends Controller
 {
@@ -35,7 +34,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Store a newly created group.
+     * Store a new group.
      *
      * @param GroupManagementRequest $request
      * @return JsonResponse
@@ -57,7 +56,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified group.
      *
      * @param GroupManagementRequest $request
      * @param Group $group

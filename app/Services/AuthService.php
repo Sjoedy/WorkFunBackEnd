@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Challenge;
 use App\Models\ChallengeUser;
 use App\Models\GroupUser;
 use App\Models\User;
@@ -11,7 +10,6 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 final class AuthService extends BaseService
 {
@@ -44,10 +42,12 @@ final class AuthService extends BaseService
             $user->position = $request->position;
             $user->password = Hash::make($request->password);
             $user->save();
+            //get credentials for return token
             $credentials = $this->checkCredentials($user->email, $request->password);
             $data = ['user' => $user, 'credentials' => $credentials];
             return $this->serviceResponse(true, __('success.register_success'), 200, $data);
         } catch (Exception $e) {
+            //render exception
             $info = $this->exceptionService->getInfo($e);
             return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
@@ -78,6 +78,11 @@ final class AuthService extends BaseService
         }
     }
 
+    /**
+     * @param $request
+     * @param $id
+     * @return array
+     */
     public function me($request, $id = null): array
     {
         try {
@@ -108,7 +113,11 @@ final class AuthService extends BaseService
         }
     }
 
-    public function mapPointAndHeatScore($user)
+    /**
+     * @param $user
+     * @return mixed
+     */
+    public function mapPointAndHeatScore($user): mixed
     {
         $userId = $user->user_id ?? $user->id;
         $challengeUser = ChallengeUser::query()

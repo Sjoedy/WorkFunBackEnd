@@ -2,13 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\ChallengeUser;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Services\Base\BaseService;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 final class GroupService extends BaseService
 {
@@ -236,7 +234,11 @@ final class GroupService extends BaseService
     }
 
 
-    public function checkGroupId($request)
+    /**
+     * @param $request
+     * @return mixed
+     */
+    public function checkGroupId($request): mixed
     {
         $checkGroupId = self::userHasGroup($request);
         if (!$checkGroupId['success']) {

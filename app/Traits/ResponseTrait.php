@@ -2,10 +2,7 @@
 
 namespace App\Traits;
 
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use function auth;
 
 trait ResponseTrait
 {
