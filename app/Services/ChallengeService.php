@@ -104,7 +104,7 @@ final class ChallengeService extends BaseService
     {
         try {
             $groupId = $this->groupService->checkGroupId($request);
-            $data = Challenge::query()->where('group_id', $groupId)->where('challenge_id', $challenge)->first();
+            $data = Challenge::query()->where('group_id', $groupId)->where('id', $challenge)->first();
             if (!isset($data)) {
                 abort(404, __('fail.data_not_found'));
             }
