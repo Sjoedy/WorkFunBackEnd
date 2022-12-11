@@ -83,12 +83,8 @@ final class AuthService extends BaseService
         try {
             $userId = $id ?? $request->user('api')->id;
             $user = User::query()->where('id', $userId)->first();
-//            $point = ChallengeUser::query()
-//                ->select(DB::raw('SUM(challenges.point) as point'))
-//                ->where('challenge_users.user_id', $userId)
-//                ->join('challenges','challenges.id','challenge_users.challenge_id')
-//                ->groupBy('challenge_users.id');
-            return $this->serviceResponse(true, __('success.get_data'), 200, $user);
+            $data = self::mapPointAndHeatScore($user);
+            return $this->serviceResponse(true, __('success.get_data'), 200, $data);
         } catch (Exception $e) {
             $info = $this->exceptionService->getInfo($e);
             return $this->serviceResponse(false, $info['message'], $info['code'], null);
@@ -112,13 +108,14 @@ final class AuthService extends BaseService
         }
     }
 
-    public function mapPointAndHeatPoint($user)
+    public function mapPointAndHeatScore($user)
     {
+        $userId = $user->user_id ?? $user->id;
         $challengeUser = ChallengeUser::query()
-            ->select(DB::raw('SUM(point) as point, SUM(heat_score)/COUNT(heat_score) as heat_score'))
-            ->join('challenges','challenges.id','challenge_users.challenge_id')
-            ->where('challenge_users.user_id', $user->user_id)
-            ->where('challenge_users.status','done')
+            ->select(DB::raw('SUM(point) as point, FORMAT(SUM(heat_score)/COUNT(heat_score),1) as heat_score'))
+            ->join('challenges', 'challenges.id', 'challenge_users.challenge_id')
+            ->where('challenge_users.user_id', $userId)
+            ->where('challenge_users.status', 'done')
             ->first();
         $user->point = $challengeUser->point;
         $user->heat_point = $challengeUser->heat_score;

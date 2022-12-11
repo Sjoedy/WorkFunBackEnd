@@ -15,16 +15,20 @@ final class GroupService extends BaseService
 
     private Group $group;
     private ExceptionService $exceptionService;
+    private AuthService $authService;
 
     /**
      * @param Group $group
+     * @param AuthService $authService
      * @param ExceptionService $exceptionService
      */
     public function __construct(Group            $group,
+                                AuthService      $authService,
                                 ExceptionService $exceptionService)
     {
         $this->group = $group;
         $this->exceptionService = $exceptionService;
+        $this->authService = $authService;
     }
 
     /**
@@ -131,7 +135,7 @@ final class GroupService extends BaseService
         try {
             $user = $request->user('api');
             $groupUser = GroupUser::query()->where('user_id', $user->id)->first();
-            if (!isset($groupUser)){
+            if (!isset($groupUser)) {
                 abort(404, __('fail.group_not_found'));
             }
             $group = Group::query()->where('id', $groupUser->group_id)->first();
@@ -145,16 +149,8 @@ final class GroupService extends BaseService
                 $groupUserQuery->where('user_id', '!=', $user->id);
             }
             $groupUser = $this->formatQuery($request, $groupUserQuery);
-            $groupUser->transform(function ($user){
-                $challengeUser = ChallengeUser::query()
-                    ->select(DB::raw('SUM(point) as point, SUM(heat_score)/COUNT(heat_score) as heat_score'))
-                    ->join('challenges','challenges.id','challenge_users.challenge_id')
-                    ->where('challenge_users.user_id', $user->user_id)
-                    ->where('challenge_users.status','done')
-                    ->first();
-                $user->point = $challengeUser->point;
-                $user->heat_point = $challengeUser->heat_score;
-                return $user;
+            $groupUser->transform(function ($user) {
+                return $this->authService->mapPointAndHeatScore($user);
             });
             $data = [
                 'group_info' => $group,
