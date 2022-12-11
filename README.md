@@ -1,4 +1,4 @@
-<p><img src="https://scontent.fvte2-3.fna.fbcdn.net/v/t39.30808-6/318962272_6289331561126266_7992790271398857011_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=5cd70e&_nc_eui2=AeGd0Fqrw466WCubdhG5srzxhzwIUCOyCxuHPAhQI7ILGxrWgPMJfmimMRGjWN5ooKB8ARW8Lsw9sfdtoB6VdGEc&_nc_ohc=G_TBP9f-bzQAX8WKqJU&_nc_ht=scontent.fvte2-3.fna&oh=00_AfCvhr9Bchjs5AvmANHMtbuihYKnXB3VoeX1qBBfaXhstQ&oe=6399CE11" width="400" alt="work fun Logo"></p>
+<p align="center"><img src="https://scontent.fvte2-3.fna.fbcdn.net/v/t39.30808-6/318962272_6289331561126266_7992790271398857011_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=5cd70e&_nc_eui2=AeGd0Fqrw466WCubdhG5srzxhzwIUCOyCxuHPAhQI7ILGxrWgPMJfmimMRGjWN5ooKB8ARW8Lsw9sfdtoB6VdGEc&_nc_ohc=G_TBP9f-bzQAX8WKqJU&_nc_ht=scontent.fvte2-3.fna&oh=00_AfCvhr9Bchjs5AvmANHMtbuihYKnXB3VoeX1qBBfaXhstQ&oe=6399CE11" width="400" alt="work fun Logo"></p>
 
 > ### WorkFun is an application that helps new employees feel like they fit well into the organization, encourages them to communicate, and provides feedback to the team in a challenging style. A leader can keep track of the heat score (the average difficulty level of the challenge for each employee) and achievement score.
 
