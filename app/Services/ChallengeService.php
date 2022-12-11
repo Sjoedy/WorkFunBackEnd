@@ -23,10 +23,10 @@ final class ChallengeService extends BaseService
      * @param GroupService $groupService
      * @param ExceptionService $exceptionService
      */
-    public function __construct(Challenge            $challenge,
-                                ChallengeUser        $challengeUser,
-                                GroupService         $groupService,
-                                ExceptionService     $exceptionService)
+    public function __construct(Challenge        $challenge,
+                                ChallengeUser    $challengeUser,
+                                GroupService     $groupService,
+                                ExceptionService $exceptionService)
     {
         $this->challenge = $challenge;
         $this->groupService = $groupService;
@@ -56,7 +56,7 @@ final class ChallengeService extends BaseService
                 $challengeUserQuery->where('challenge_users.user_id', $user->id);
             }
 
-            $data = $this->formatQuery($request, $challengeUserQuery, [], ['status']);
+            $data = $this->formatQuery($request, $challengeUserQuery->orderByDesc('challenge_users.updated_at'), [], ['status']);
             return $this->serviceResponse(true, __('success.get_data'), 200, $data);
         } catch (Exception $e) {
             $info = $this->exceptionService->getInfo($e);

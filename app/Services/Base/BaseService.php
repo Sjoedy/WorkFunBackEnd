@@ -73,16 +73,6 @@ class BaseService
             }
         }
 
-        //order by column
-        if (isset($orderBy)) {
-            $query->orderByDesc($orderBy);
-        }
-
-        // group by column
-        if (isset($groupBy)) {
-            $query->groupBy($groupBy);
-        }
-
         // Paginate
         if (!empty($request['per_page'])) {
             $data = $query->paginate($request['per_page']);
