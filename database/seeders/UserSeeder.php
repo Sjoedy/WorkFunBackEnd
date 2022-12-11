@@ -28,21 +28,21 @@ class UserSeeder extends Seeder
                 'name' => 'Do',
                 'surname' => 'Teletubbies',
                 'email' => 'do@gmail.com',
-                'tel' => '12345678',
+                'tel' => '24680246',
                 'password' => 'a1234567'
             ],
             [
                 'name' => 'Paeng',
                 'surname' => 'Teletubbies',
                 'email' => 'paeng@gmail.com',
-                'tel' => '12345678',
+                'tel' => '13579135',
                 'password' => 'a1234567'
             ],
             [
                 'name' => 'Nou',
                 'surname' => 'Teletubbies',
                 'email' => 'nou@gmail.com',
-                'tel' => '12345678',
+                'tel' => '36936936',
                 'password' => 'a1234567'
             ]
         ];
