@@ -45,7 +45,10 @@ final class ChallengeService extends BaseService
             $groupId = $this->groupService->checkGroupId($request);
             $isGroupAdmin = $this->groupService->isGroupAdmin($user->id, $groupId);
             $challengeUserQuery = $this->challengeUser->query();
-            $challengeUserQuery->join('challenges', 'challenges.id', 'challenge_users.challenge_id')
+            $challengeUserQuery->select(
+                'challenge_users.*'
+            )
+                ->join('challenges', 'challenges.id', 'challenge_users.challenge_id')
                 ->with(['user', 'challenge']);
             if ($isGroupAdmin) {
                 $challengeUserQuery->where('challenges.group_id', $groupId);
