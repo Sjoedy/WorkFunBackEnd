@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
+use App\Models\GroupUser;
 use App\Models\User;
 use App\Services\Base\BaseService;
 use Exception;
@@ -62,9 +63,11 @@ final class AuthService extends BaseService
             $response = $this->checkCredentials($request->credentials, $request->password);
             if (!empty($response['access_token'])) {
                 $user = User::query()->where('email', $request->credentials)->firstOrFail();
+                $groupUser = GroupUser::query()->where('user_id', $user->id)->first();
                 $data = [
                     'credentials' => $response,
-                    'user' => $user
+                    'user' => $user,
+                    'groupInfo' => $groupUser
                 ];
                 return $this->serviceResponse(true, __('success.get_data'), 200, $data);
             }
@@ -107,6 +110,19 @@ final class AuthService extends BaseService
             $info = $this->exceptionService->getInfo($e);
             return $this->serviceResponse(false, $info['message'], $info['code'], null);
         }
+    }
+
+    public function mapPointAndHeatPoint($user)
+    {
+        $challengeUser = ChallengeUser::query()
+            ->select(DB::raw('SUM(point) as point, SUM(heat_score)/COUNT(heat_score) as heat_score'))
+            ->join('challenges','challenges.id','challenge_users.challenge_id')
+            ->where('challenge_users.user_id', $user->user_id)
+            ->where('challenge_users.status','done')
+            ->first();
+        $user->point = $challengeUser->point;
+        $user->heat_point = $challengeUser->heat_score;
+        return $user;
     }
 
     /**
